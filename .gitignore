@@ -1,0 +1,8 @@
+node_modules/
+www/
+cache/*
+!cache/.gitkeep
+!cache/.htaccess
+__pycache__/
+*.pyc
+.DS_Store

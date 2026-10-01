@@ -1,0 +1,78 @@
+# Builds the Android app on GitHub's servers and publishes the APK as a Release.
+#
+# Runs by itself whenever you push to the main branch, and on demand from the Actions tab ("Run workflow").
+# The finished file is at: your repository -> Releases -> "NH48 Summit Forecast (latest build)" -> NH48-Summit-Forecast.apk
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write          # lets the job publish the Release
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up the Android tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install the packages
+        run: npm ci
+
+      - name: Check the forecast code
+        run: node tests/core.test.js
+
+      - name: Collect the web files into the app
+        run: |
+          node scripts/build-www.mjs
+          npx cap sync android
+
+      - name: Build the APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk NH48-Summit-Forecast.apk
+
+      - name: Keep a copy with this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: NH48-Summit-Forecast-apk
+          path: NH48-Summit-Forecast.apk
+          retention-days: 30
+
+      - name: Publish the APK as the latest Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --repo "${{ github.repository }}" --yes --cleanup-tag || true
+          gh release create latest NH48-Summit-Forecast.apk \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "NH48 Summit Forecast (latest build)" \
+            --notes "Build ${{ github.run_number }}, from commit ${{ github.sha }}. Open this page on your phone and tap NH48-Summit-Forecast.apk to install it."

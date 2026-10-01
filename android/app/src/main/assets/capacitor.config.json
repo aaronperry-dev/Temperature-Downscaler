@@ -1,0 +1,14 @@
+{
+	"appId": "com.nh48.summitforecast",
+	"appName": "NH48 Summit Forecast",
+	"webDir": "www",
+	"backgroundColor": "#0e1a20",
+	"android": {
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "css"
+		}
+	}
+}

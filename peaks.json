@@ -1,0 +1,338 @@
+[
+ {
+  "id": "mount-washington",
+  "name": "Mount Washington",
+  "ft": 6288,
+  "lat": 44.2705,
+  "lon": -71.30325
+ },
+ {
+  "id": "mount-adams",
+  "name": "Mount Adams",
+  "ft": 5774,
+  "lat": 44.32056,
+  "lon": -71.29139
+ },
+ {
+  "id": "mount-jefferson",
+  "name": "Mount Jefferson",
+  "ft": 5712,
+  "lat": 44.30417,
+  "lon": -71.31667
+ },
+ {
+  "id": "mount-monroe",
+  "name": "Mount Monroe",
+  "ft": 5384,
+  "lat": 44.25537,
+  "lon": -71.32154
+ },
+ {
+  "id": "mount-madison",
+  "name": "Mount Madison",
+  "ft": 5367,
+  "lat": 44.32833,
+  "lon": -71.27667
+ },
+ {
+  "id": "mount-lafayette",
+  "name": "Mount Lafayette",
+  "ft": 5249,
+  "lat": 44.16028,
+  "lon": -71.64417
+ },
+ {
+  "id": "mount-lincoln",
+  "name": "Mount Lincoln",
+  "ft": 5089,
+  "lat": 44.14833,
+  "lon": -71.64444
+ },
+ {
+  "id": "south-twin-mountain",
+  "name": "South Twin Mountain",
+  "ft": 4902,
+  "lat": 44.18756,
+  "lon": -71.5548
+ },
+ {
+  "id": "carter-dome",
+  "name": "Carter Dome",
+  "ft": 4832,
+  "lat": 44.26734,
+  "lon": -71.17926
+ },
+ {
+  "id": "mount-moosilauke",
+  "name": "Mount Moosilauke",
+  "ft": 4802,
+  "lat": 44.02472,
+  "lon": -71.8303
+ },
+ {
+  "id": "mount-eisenhower",
+  "name": "Mount Eisenhower",
+  "ft": 4780,
+  "lat": 44.24073,
+  "lon": -71.35018
+ },
+ {
+  "id": "north-twin-mountain",
+  "name": "North Twin Mountain",
+  "ft": 4761,
+  "lat": 44.20256,
+  "lon": -71.55786
+ },
+ {
+  "id": "mount-carrigain",
+  "name": "Mount Carrigain",
+  "ft": 4700,
+  "lat": 44.09365,
+  "lon": -71.4467
+ },
+ {
+  "id": "mount-bond",
+  "name": "Mount Bond",
+  "ft": 4698,
+  "lat": 44.15306,
+  "lon": -71.53
+ },
+ {
+  "id": "middle-carter-mountain",
+  "name": "Middle Carter Mountain",
+  "ft": 4610,
+  "lat": 44.30311,
+  "lon": -71.16781
+ },
+ {
+  "id": "west-bond",
+  "name": "West Bond",
+  "ft": 4540,
+  "lat": 44.15473,
+  "lon": -71.54351
+ },
+ {
+  "id": "mount-garfield",
+  "name": "Mount Garfield",
+  "ft": 4500,
+  "lat": 44.18726,
+  "lon": -71.61068
+ },
+ {
+  "id": "mount-liberty",
+  "name": "Mount Liberty",
+  "ft": 4459,
+  "lat": 44.11589,
+  "lon": -71.64203
+ },
+ {
+  "id": "south-carter-mountain",
+  "name": "South Carter Mountain",
+  "ft": 4430,
+  "lat": 44.28978,
+  "lon": -71.17664
+ },
+ {
+  "id": "wildcat-mountain-a",
+  "name": "Wildcat Mountain (A Peak)",
+  "ft": 4422,
+  "lat": 44.25902,
+  "lon": -71.20166
+ },
+ {
+  "id": "mount-hancock",
+  "name": "Mount Hancock (North Peak)",
+  "ft": 4420,
+  "lat": 44.08368,
+  "lon": -71.49369
+ },
+ {
+  "id": "south-kinsman-mountain",
+  "name": "South Kinsman Mountain",
+  "ft": 4358,
+  "lat": 44.123,
+  "lon": -71.73667
+ },
+ {
+  "id": "mount-field",
+  "name": "Mount Field",
+  "ft": 4340,
+  "lat": 44.19614,
+  "lon": -71.4331
+ },
+ {
+  "id": "mount-osceola",
+  "name": "Mount Osceola",
+  "ft": 4340,
+  "lat": 44.00161,
+  "lon": -71.53561
+ },
+ {
+  "id": "mount-flume",
+  "name": "Mount Flume",
+  "ft": 4328,
+  "lat": 44.10889,
+  "lon": -71.62778
+ },
+ {
+  "id": "mount-hancock-south",
+  "name": "South Hancock",
+  "ft": 4319,
+  "lat": 44.07333,
+  "lon": -71.48722
+ },
+ {
+  "id": "mount-pierce",
+  "name": "Mount Pierce",
+  "ft": 4310,
+  "lat": 44.22694,
+  "lon": -71.36528
+ },
+ {
+  "id": "north-kinsman-mountain",
+  "name": "North Kinsman Mountain",
+  "ft": 4293,
+  "lat": 44.123,
+  "lon": -71.73833
+ },
+ {
+  "id": "mount-willey",
+  "name": "Mount Willey",
+  "ft": 4285,
+  "lat": 44.18353,
+  "lon": -71.42074
+ },
+ {
+  "id": "bondcliff",
+  "name": "Bondcliff",
+  "ft": 4265,
+  "lat": 44.14065,
+  "lon": -71.54062
+ },
+ {
+  "id": "zealand-mountain",
+  "name": "Zealand Mountain",
+  "ft": 4260,
+  "lat": 44.17967,
+  "lon": -71.52133
+ },
+ {
+  "id": "north-tripyramid",
+  "name": "North Tripyramid",
+  "ft": 4180,
+  "lat": 43.97314,
+  "lon": -71.44288
+ },
+ {
+  "id": "mount-cabot",
+  "name": "Mount Cabot",
+  "ft": 4170,
+  "lat": 44.506,
+  "lon": -71.41433
+ },
+ {
+  "id": "mount-osceola-east-peak",
+  "name": "East Osceola",
+  "ft": 4156,
+  "lat": 44.00611,
+  "lon": -71.52028
+ },
+ {
+  "id": "middle-tripyramid",
+  "name": "Middle Tripyramid",
+  "ft": 4140,
+  "lat": 43.96471,
+  "lon": -71.43995
+ },
+ {
+  "id": "cannon-mountain",
+  "name": "Cannon Mountain",
+  "ft": 4100,
+  "lat": 44.15661,
+  "lon": -71.6988
+ },
+ {
+  "id": "wildcat-mountain-d",
+  "name": "Wildcat D Peak",
+  "ft": 4070,
+  "lat": 44.24945,
+  "lon": -71.22355
+ },
+ {
+  "id": "mount-hale",
+  "name": "Mount Hale",
+  "ft": 4054,
+  "lat": 44.22172,
+  "lon": -71.51202
+ },
+ {
+  "id": "mount-jackson",
+  "name": "Mount Jackson",
+  "ft": 4052,
+  "lat": 44.20333,
+  "lon": -71.37583
+ },
+ {
+  "id": "mount-tom",
+  "name": "Mount Tom",
+  "ft": 4051,
+  "lat": 44.21052,
+  "lon": -71.44606
+ },
+ {
+  "id": "mount-moriah",
+  "name": "Mount Moriah",
+  "ft": 4049,
+  "lat": 44.34064,
+  "lon": -71.13185
+ },
+ {
+  "id": "mount-passaconaway",
+  "name": "Mount Passaconaway",
+  "ft": 4043,
+  "lat": 43.95417,
+  "lon": -71.38111
+ },
+ {
+  "id": "owls-head",
+  "name": "Owl's Head",
+  "ft": 4025,
+  "lat": 44.14449,
+  "lon": -71.60493
+ },
+ {
+  "id": "galehead-mountain",
+  "name": "Galehead Mountain",
+  "ft": 4024,
+  "lat": 44.18528,
+  "lon": -71.57361
+ },
+ {
+  "id": "mount-whiteface",
+  "name": "Mount Whiteface",
+  "ft": 4020,
+  "lat": 43.93395,
+  "lon": -71.40591
+ },
+ {
+  "id": "mount-waumbek",
+  "name": "Mount Waumbek",
+  "ft": 4006,
+  "lat": 44.43283,
+  "lon": -71.41702
+ },
+ {
+  "id": "mount-isolation",
+  "name": "Mount Isolation",
+  "ft": 4004,
+  "lat": 44.21479,
+  "lon": -71.30924
+ },
+ {
+  "id": "mount-tecumseh",
+  "name": "Mount Tecumseh",
+  "ft": 4003,
+  "lat": 43.96667,
+  "lon": -71.55667
+ }
+]

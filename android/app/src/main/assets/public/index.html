@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NH 48 Summit Forecasts</title>
+<script>
+/* Apply a saved theme before first paint so a dark-mode visitor never sees a white flash. */
+(function () { try { var t = localStorage.getItem('sd-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+</script>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* Page reset (the hosted page has no wrapper supplying one) */
+:root { color-scheme: light; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: one column on phones, tabs (All 48 / Forecast / Setup) under the summit picker; two columns inside a tab from 900px. */
+:root {
+  --bg: #e9eeef;
+  --surface: #f6f9f9;
+  --ink: #14222a;
+  --muted: #55676f;
+  --faint: #8a9aa1;
+  --line: #cbd6d9;
+  --grid: #dbe3e5;
+  --accent: #0d6f8f;
+  --accent-ink: #ffffff;
+  --accent-wash: rgba(13, 111, 143, 0.10);
+  --marker: #d9480f;
+  --ice: #5aa9c7;
+  --cold: rgba(90, 169, 199, 0.16);
+  --warn: #9a5b00;
+  --good: #1d7a46;
+  --feels: #6b4fb0;
+  --fam-network: #2a78d6; --fam-rate: #eb6834; --fam-parcel: #1baf7a; --fam-profile: #4a3aa7; --live: #c2185b; --live-wash: rgba(194, 24, 91, 0.07);
+  --hi-wash: rgba(42, 120, 214, 0.11); --lo-wash: rgba(227, 73, 72, 0.11);
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f171c; --surface: #172229; --ink: #e3ecee; --muted: #93a6ad; --faint: #6b7d84;
+    --line: #2b3a42; --grid: #22303a; --accent: #4fb3d0; --accent-ink: #08222b;
+    --accent-wash: rgba(79, 179, 208, 0.14); --marker: #ff8a5b; --ice: #6fb7d3;
+    --cold: rgba(111, 183, 211, 0.14); --warn: #e0a24a; --good: #5fcf8f; --feels: #b7a2f0;
+    --fam-network: #3987e5; --fam-rate: #d95926; --fam-parcel: #199e70; --fam-profile: #9085e9; --live: #e64b8b; --live-wash: rgba(230, 75, 139, 0.11);
+    --hi-wash: rgba(57, 135, 229, 0.18); --lo-wash: rgba(230, 103, 103, 0.18);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f171c; --surface: #172229; --ink: #e3ecee; --muted: #93a6ad; --faint: #6b7d84;
+  --line: #2b3a42; --grid: #22303a; --accent: #4fb3d0; --accent-ink: #08222b;
+  --accent-wash: rgba(79, 179, 208, 0.14); --marker: #ff8a5b; --ice: #6fb7d3;
+  --cold: rgba(111, 183, 211, 0.14); --warn: #e0a24a; --good: #5fcf8f; --feels: #b7a2f0;
+  --fam-network: #3987e5; --fam-rate: #d95926; --fam-parcel: #199e70; --fam-profile: #9085e9; --live: #e64b8b; --live-wash: rgba(230, 75, 139, 0.11);
+  --hi-wash: rgba(57, 135, 229, 0.18); --lo-wash: rgba(230, 103, 103, 0.18);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--font-body); padding-inline: 16px; padding-block: 14px 40px; }
+.wrap { max-width: 1040px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+h1 { font-size: 30px; line-height: 1; text-transform: uppercase; letter-spacing: 0.04em; }
+h2 { font-size: 21px; line-height: 1.15; }
+h3 { font-size: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+p { margin: 0; }
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 16px; }
+header .sub { color: var(--muted); font-size: 14px; max-width: 46ch; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: transparent; padding: 7px 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--muted); min-height: 36px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.seg.wide { display: flex; }
+.seg.wide button { flex: 1; }
+
+.strip { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: baseline; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.strip b { font-family: var(--font-data); font-weight: 500; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; color: var(--warn); border: 1px solid currentColor; vertical-align: 1px; }
+
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+.panel { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.card { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cols { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .cols { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+
+.lede { font-size: 16px; }
+.lede b { font-weight: 600; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+@media (min-width: 620px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat .k { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.stat .v { font-family: var(--font-display); font-size: 34px; font-weight: 600; line-height: 1.05; }
+.stat .v small { font-size: 16px; font-weight: 500; color: var(--muted); }
+.stat .s { font-size: 13px; color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--muted); }
+.legend .chip { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; border: 1px solid var(--line); }
+.legend .chip.hi { background: var(--hi-wash); }
+.legend .chip.lo { background: var(--lo-wash); }
+.chart { position: relative; min-width: 0; }
+.chart .highcharts-container { max-width: 100%; }
+.chart .msg { margin: 8px 0; }
+.tt { min-width: 200px; font-family: var(--font-body); }
+.tt-h { font-weight: 600; font-size: 13px; }
+.tt-s { color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+.tt-f { color: var(--muted); font-size: 11px; margin-top: 4px; text-align: right; white-space: normal; max-width: 360px; margin-left: auto; }
+.tt-r { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 52px; gap: 0 8px; align-items: center; line-height: 1.5; }
+.tt-r i { display: block; width: 22px; height: 0; }
+.tt-r span { color: var(--muted); }
+.tt-r b { font-family: var(--font-data); font-weight: 500; text-align: right; }
+.tt-r em { font-family: var(--font-data); font-style: normal; color: var(--muted); text-align: right; }
+.tt-r.b span { color: var(--ink); font-weight: 600; }
+.livehead { display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: space-between; align-items: center; }
+.livehead .row2 { align-items: center; }
+.live-lede { font-size: 15px; }
+.live-lede b { font-weight: 600; }
+.live-flag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--live); color: var(--ink); background: var(--live-wash); white-space: nowrap; }
+.live-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+@media (min-width: 720px) { .live-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.live-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 900px) { .live-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.tr-off td { color: var(--muted); }
+.tr-warm td:first-child { box-shadow: inset 3px 0 0 var(--live); }
+.tt-r.b b { font-weight: 600; }
+.tt-r.p { grid-template-columns: 22px minmax(0, 1fr) auto 52px 66px; }
+.tt-lv { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px 10px; margin: 4px 0 6px; padding: 4px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.tt-lv span { font-size: 10px; color: var(--muted); letter-spacing: 0.02em; }
+.tt-lv b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 12px; color: var(--ink); letter-spacing: 0; }
+.tt-r u.np { font-style: italic; color: var(--muted); }
+.tt-r u { font-family: var(--font-data); text-decoration: none; color: var(--ink); text-align: right; font-size: 11px; }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field > label, .field > .lab { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+input[type="number"], input[type="text"], textarea, select { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; min-width: 0; min-height: 40px; }
+textarea { font-family: var(--font-data); font-size: 12px; line-height: 1.45; min-height: 150px; resize: vertical; white-space: pre; overflow: auto; }
+input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px; }
+.row2 { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.row2 > * { min-width: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 14px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.file { position: relative; overflow: hidden; }
+.file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.slider-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; }
+.slider-row .val { font-family: var(--font-data); font-size: 14px; }
+.slider-row input { grid-column: 1 / -1; }
+.msg { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--accent-wash); }
+.msg.err { background: rgba(217, 72, 15, 0.12); color: var(--marker); }
+.msg.warn { color: var(--warn); background: rgba(154, 91, 0, 0.10); }
+.method-note { font-size: 13px; color: var(--muted); }
+
+.tablewrap { overflow: auto; max-height: 440px; border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-family: var(--font-data); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--grid); }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+th { position: sticky; top: 0; background: var(--surface); font-family: var(--font-body); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); z-index: 1; }
+th:first-child { z-index: 2; }
+tr.cold td { background: var(--cold); }
+tr.cold td:first-child { background: var(--cold); }
+tr.day td { border-top: 2px solid var(--line); }
+details summary { cursor: pointer; font-weight: 600; color: var(--muted); font-size: 14px; min-height: 32px; }
+.notes { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.notes b { color: var(--ink); font-weight: 600; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.stack { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.methods { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); cursor: pointer; min-height: 44px; }
+.opt .n { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.opt .n::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--faint); flex: none; }
+.opt[aria-checked="true"] { border-color: var(--accent); background: var(--accent-wash); }
+.opt[aria-checked="true"] .n::before { border-color: var(--accent); background: radial-gradient(var(--accent) 0 42%, transparent 46%); }
+.opt .d { font-size: 13px; color: var(--muted); padding-left: 22px; }
+.opt:disabled { opacity: 0.6; cursor: default; }
+#cmp th, #cmp td { padding: 6px 7px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; cursor: pointer; text-align: left; font-size: inherit; font-family: var(--font-body); text-decoration: underline; text-underline-offset: 3px; min-height: 28px; }
+tr.sel td, tr.sel td:first-child { background: var(--accent-wash); }
+.pick { display: grid; gap: 10px 16px; grid-template-columns: minmax(0, 1fr); align-items: end; }
+@media (min-width: 620px) { .pick { grid-template-columns: minmax(0, 1fr) auto; } }
+#ov th, #ov td { padding: 6px 5px; }
+#ov th:first-child, #ov td:first-child { min-width: 112px; max-width: 132px; white-space: normal; }
+#ov .linkbtn { font-size: 14px; }
+#ov td .small { font-family: var(--font-data); font-size: 11.5px; }
+.hctl { display: flex; flex-wrap: wrap; gap: 8px; }
+.mgroup { font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+.mgroup:first-child { margin-top: 0; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.presets .btn { min-height: 34px; padding: 4px 10px; font-size: 13px; }
+.climgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+.climgrid input { padding: 6px 8px; min-height: 36px; }
+.climgrid label { font-size: 12px; }
+#netTbl th, #netTbl td { padding: 5px 8px; }
+body, .card, .strip, .seg, .opt, input, select, textarea, .calls { transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+@media (prefers-reduced-motion: reduce) { body, .card, .strip, .seg, .opt, input, select, textarea, .calls { transition: none; } }
+
+/* API call log: a small floating panel, never a modal, so the page stays usable while the pull runs. */
+.calls { position: fixed; z-index: 30; right: 16px; bottom: 16px; width: min(420px, calc(100vw - 32px)); max-height: min(62vh, 480px); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 32px rgba(0, 0, 0, 0.30); overflow: hidden; }
+.calls[hidden] { display: none; }
+.calls-h { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; }
+.calls-h h2 { flex: 1; font-size: 19px; }
+.calls-x { flex: none; width: 40px; height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
+.calls-x:hover { background: var(--accent-wash); color: var(--ink); }
+.calls-bar { height: 4px; background: var(--grid); }
+.calls-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.15s linear; }
+.calls.done .calls-bar i { background: var(--good); }
+.calls.err .calls-bar i { background: var(--marker); }
+@media (prefers-reduced-motion: reduce) { .calls-bar i { transition: none; } }
+.calls-s { display: flex; justify-content: space-between; gap: 12px; padding: 8px 14px 6px; font-size: 13px; color: var(--muted); }
+.calls-s .mono { flex: none; }
+.calls ol { list-style: none; margin: 0; padding: 0 0 6px; overflow: auto; flex: 1; min-height: 72px; overscroll-behavior: contain; }
+.call { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1px 8px; align-items: baseline; padding: 6px 14px; border-top: 1px solid var(--grid); font-size: 13px; }
+.call .cn { font-weight: 500; overflow-wrap: anywhere; }
+.call .cn .tag { margin-left: 6px; font-size: 10px; padding: 1px 5px; }
+.call .ms { font-family: var(--font-data); font-size: 11.5px; color: var(--muted); min-width: 5ch; text-align: right; }
+.call .p, .call .for { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+.call .p { font-family: var(--font-data); }
+.call.sec { display: block; background: var(--accent-wash); font-weight: 600; color: var(--ink); }
+.call.wait { display: block; color: var(--warn); }
+.call.bad { display: block; color: var(--marker); }
+.pill { font-family: var(--font-data); font-size: 11.5px; padding: 0 6px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.ok { color: var(--good); }
+.pill.warn { color: var(--warn); }
+.pill.bad { color: var(--marker); }
+@media (max-width: 520px) { .calls { right: 16px; left: 16px; width: auto; max-height: 52vh; } }
+</style>
+</head>
+<body>
+
+
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>NH 48 Summit Forecasts</h1>
+      <p class="sub">The NWS gridded forecast, corrected from its grid-cell elevation to the summit of each New Hampshire 4,000-footer.</p>
+    </div>
+    <div class="hctl">
+      <div class="seg" id="themeSeg" role="group" aria-label="Color theme">
+        <button type="button" data-t="auto" aria-pressed="true">Auto</button>
+        <button type="button" data-t="light" aria-pressed="false">Light</button>
+        <button type="button" data-t="dark" aria-pressed="false">Dark</button>
+      </div>
+      <div class="seg" role="group" aria-label="Units">
+        <button type="button" id="u-imp" aria-pressed="true">&deg;F &middot; ft</button>
+        <button type="button" id="u-metric" aria-pressed="false">&deg;C &middot; m</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pick">
+    <div class="field"><label for="peakSel">Summit</label><select id="peakSel"></select></div>
+    <div class="field"><span class="lab" id="winLab">Period</span>
+      <div class="seg" id="winSeg" role="group" aria-labelledby="winLab">
+        <button type="button" data-h="24" aria-pressed="false">24 h</button>
+        <button type="button" data-h="48" aria-pressed="false">48 h</button>
+        <button type="button" data-h="72" aria-pressed="true">72 h</button>
+        <button type="button" data-h="9999" aria-pressed="false">All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="strip" id="strip" aria-live="polite"></div>
+
+  <div class="tabs">
+    <div class="seg wide" role="tablist" aria-label="Sections">
+      <button type="button" role="tab" id="tab-pk" aria-selected="true" aria-controls="p-pk">All 48</button>
+      <button type="button" role="tab" id="tab-fc" aria-selected="false" aria-controls="p-fc">Forecast</button>
+      <button type="button" role="tab" id="tab-in" aria-selected="false" aria-controls="p-in">Setup</button>
+    </div>
+  </div>
+
+  <!-- ALL 48 -->
+  <section class="panel" id="p-pk" role="tabpanel" aria-labelledby="tab-pk">
+    <div class="card">
+      <div class="row2" style="justify-content: space-between; align-items: center;">
+        <h2>Forecast source</h2>
+        <span class="tag" id="srcTag" hidden>Example</span>
+      </div>
+      <p class="small" id="srcInfo"></p>
+      <div class="row2">
+        <button type="button" class="btn" id="nwsRefresh">Refresh forecast</button>
+        <button type="button" class="btn ghost" id="nwsLogBtn" hidden>Show API calls</button>
+      </div>
+      <p class="msg" id="nwsMsg" hidden></p>
+      <details>
+        <summary>Load a saved forecast instead</summary>
+        <div class="notes" style="margin-top: 8px;">
+          <p id="nwsHelp">The forecast normally comes from <span class="mono">api/nws.php</span> on this server, which asks api.weather.gov and keeps the answer for an hour. To work from a saved copy, open <span class="mono">api/nws.php</span> in a browser, save the page as a .json file, and load it here. You can also paste one summit&rsquo;s /gridpoints response.</p>
+          <div class="row2">
+            <label class="btn ghost file">Load NWS file<input type="file" id="nwsFile" accept=".json,application/json"></label>
+            <button type="button" class="btn ghost" id="nwsExample">Use example</button>
+          </div>
+          <div class="field"><label for="nwsPaste">Paste one /gridpoints response</label><textarea id="nwsPaste" spellcheck="false" autocomplete="off" autocapitalize="off" style="min-height: 90px;"></textarea></div>
+          <div class="row2"><button type="button" class="btn ghost" id="nwsPasteGo">Use pasted response</button></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="row2" style="justify-content: space-between; align-items: center;">
+        <h2>All 48 summits</h2>
+        <div class="seg" id="sortSeg" role="group" aria-label="Sort summits">
+          <button type="button" data-s="ht" aria-pressed="true">Height</button>
+          <button type="button" data-s="cold" aria-pressed="false">Coldest</button>
+          <button type="button" data-s="wind" aria-pressed="false">Windiest</button>
+        </div>
+      </div>
+      <p class="small muted" id="ovNote"></p>
+      <div class="tablewrap" tabindex="0" aria-label="Forecast extremes for the 48 summits"><table id="ov"></table></div>
+    </div>
+  </section>
+
+  <!-- FORECAST -->
+  <section class="panel" id="p-fc" role="tabpanel" aria-labelledby="tab-fc" hidden>
+    <div class="card">
+      <div><h2 id="fcTitle"></h2><p class="small muted" id="fcSub"></p></div>
+      <p class="lede" id="lede"></p>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="card">
+      <div class="row2" style="justify-content: space-between; align-items: center;">
+        <h3>Temperature at the summit, every method</h3>
+        <div class="row2">
+          <div class="seg" id="wSeg" role="group" aria-label="How the methods are weighted">
+            <button type="button" id="wRegime" data-w="regime" aria-pressed="true">Regime-weighted</button>
+            <button type="button" id="wEqual" data-w="equal" aria-pressed="false">Equal weights</button>
+          </div>
+          <div class="seg" id="hSeg" role="group" aria-label="Hour labels on the time axis">
+            <button type="button" id="hAuto" data-h="auto" aria-pressed="true">Auto hours</button>
+            <button type="button" id="hEvery" data-h="every" aria-pressed="false">Every hour</button>
+          </div>
+        </div>
+      </div>
+      <p class="small muted" id="likelyNote"></p>
+      <p class="small" id="liveLine" hidden></p>
+      <div class="chart" id="chart1" role="img" aria-label="Line chart of the summit temperature from every downscaling method, with the most likely value highlighted"></div>
+      <p class="small muted">Click a name in the key to hide or show a method. Drag across the chart to zoom in, and the hour labels fill in as you go. &ldquo;Every hour&rdquo; labels each hour and scrolls sideways when the period is long. Hover to see the ten levels of the methods (MIN, P5, P10, P25, P50, MEAN, P75, P90, P95, MAX) and every line sorted by temperature, each with its difference from the NWS cell and, for a method, the one level it holds (no two methods share a level; percentiles by the NIST definition). The key is ordered by each method&rsquo;s average percentile. The same values are in the tables below.</p>
+    </div>
+
+    <div class="card" id="liveCard">
+      <div class="livehead">
+        <h3>MWARVTP: Mount Washington Auto Road</h3>
+        <div class="row2">
+          <div class="seg" id="liveOnSeg" role="group" aria-label="Use MWARVTP in the most likely line">
+            <button type="button" id="liveOn" data-v="1" aria-pressed="true">Applied</button>
+            <button type="button" id="liveOff" data-v="0" aria-pressed="false">Not applied</button>
+          </div>
+          <div class="seg" id="liveHSeg" role="group" aria-label="How many hours MWARVTP is used for">
+            <button type="button" data-h="3" aria-pressed="false">3 h</button>
+            <button type="button" data-h="6" aria-pressed="true">6 h</button>
+            <button type="button" data-h="9" aria-pressed="false">9 h</button>
+            <button type="button" data-h="12" aria-pressed="false">12 h</button>
+          </div>
+          <button type="button" class="btn ghost" id="liveRefresh">Refresh</button>
+        </div>
+      </div>
+      <p class="msg" id="liveMsg" hidden></p>
+      <p class="live-lede" id="liveLede"></p>
+      <label class="check" id="liveTowerRow" hidden><input type="checkbox" id="liveTower" checked><span>Start Mount Washington&rsquo;s line from the Observatory tower reading. Off tests the road stations alone against the tower.</span></label>
+      <div class="live-facts" id="liveFacts"></div>
+      <div class="live-grid">
+        <div><div class="chart" id="chartLive" role="img" aria-label="Temperature against elevation at each Auto Road station, with the fitted live lapse rate and the forecast lapse rate"></div></div>
+        <div><div class="chart" id="chartLiveTrend" role="img" aria-label="Whole-mountain lapse rate over the last two hours"></div><p class="small muted" id="liveTrendNote"></p></div>
+      </div>
+      <div class="tablewrap" tabindex="0" aria-label="Auto Road stations, latest readings"><table id="liveTbl"></table></div>
+      <p class="small muted" id="liveNote"></p>
+    </div>
+
+    <div class="card" id="uaCard">
+      <div class="livehead">
+        <h3>Hypsometric inputs: model levels and observed pressure</h3>
+        <div class="row2">
+          <div class="seg" id="uaOnSeg" role="group" aria-label="Use the model pressure levels">
+            <button type="button" id="uaOn" data-v="1" aria-pressed="true">On</button>
+            <button type="button" id="uaOff" data-v="0" aria-pressed="false">Off</button>
+          </div>
+          <button type="button" class="btn ghost" id="uaRefresh">Refresh</button>
+        </div>
+      </div>
+      <p class="msg" id="uaMsg" hidden></p>
+      <p class="live-lede" id="uaLede"></p>
+      <div class="live-grid">
+        <div>
+          <div class="slider-row"><label for="uaHour" class="lab">Hour shown</label><span class="val" id="uaHourVal"></span>
+            <input type="range" id="uaHour" min="0" max="0" step="1" value="0"></div>
+          <div class="chart" id="chartUA" role="img" aria-label="Temperature against elevation: the model's pressure levels, the NWS cell, and the hypsometric summit value"></div>
+        </div>
+        <div><div class="chart" id="chartUAp" role="img" aria-label="Sea-level pressure by hour: the model as issued, the model adjusted to the airport observations, and the observations"></div></div>
+      </div>
+      <div class="tablewrap" tabindex="0" aria-label="The model's pressure levels at the chosen hour"><table id="uaTbl"></table></div>
+      <p class="small muted" id="uaNote"></p>
+    </div>
+
+    <div class="card">
+      <h3>Method comparison</h3>
+      <p class="small muted" id="cmpNote"></p>
+      <div class="tablewrap" tabindex="0" aria-label="Comparison of downscaling methods"><table id="cmp"></table></div>
+    </div>
+
+    <div class="card">
+      <h3>Regional weather and the weighting</h3>
+      <p class="small" id="regText"></p>
+      <div class="legend"><span><i class="chip hi"></i>High-pressure signature</span><span><i class="chip lo"></i>Low-pressure signature</span><span class="muted">Bands mark the hours; no band means neutral.</span></div>
+      <div class="chart" id="chartReg1" role="img" aria-label="Regional average cloud cover, humidity and share of cells with precipitation by hour"></div>
+      <div class="chart" id="chartReg2" role="img" aria-label="Regional average wind speed by hour"></div>
+      <details>
+        <summary>Regimes and the cooling rate each makes likely</summary>
+        <div class="notes" style="margin-top: 8px;">
+          <p>The expected rates are assumptions taken from how mountain lapse rates usually behave, not fitted to New Hampshire. For each hour the regime&rsquo;s expectation is combined with the rate the 48 NWS cells actually show, and each method is weighted by how close its own cooling rate is to the result.</p>
+          <div class="tablewrap" tabindex="0" aria-label="Regimes"><table id="regTbl"></table></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Freezing level against the summit</h3>
+      <div class="chart" id="chart2" role="img" aria-label="Line chart of freezing level height against summit elevation"></div>
+      <p class="method-note" id="freezeNote"></p>
+    </div>
+
+    <div class="card">
+      <div class="row2" style="justify-content: space-between; align-items: center;">
+        <h3>Hour by hour</h3>
+        <button type="button" class="btn ghost" id="exportBtn">Export CSV</button>
+      </div>
+      <div class="tablewrap" tabindex="0" aria-label="Hourly downscaled values"><table id="tbl"></table></div>
+      <p class="small muted" id="fbNote"></p>
+      <p class="small muted" id="pNote"></p>
+      <p class="msg" id="exportMsg" hidden></p>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section class="panel" id="p-in" role="tabpanel" aria-labelledby="tab-in" hidden>
+    <div class="cols">
+      <div class="stack">
+        <div class="card">
+          <h2>Model elevation</h2>
+          <div class="field">
+            <label for="zModel" id="zModelLab">Grid-cell elevation</label>
+            <div class="row2">
+              <input type="number" id="zModel" inputmode="decimal" step="1" style="flex: 1 1 110px;">
+              <button type="button" class="btn ghost" id="zNws">Use the NWS value</button>
+            </div>
+            <p class="small muted" id="zNote"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Method</h2>
+          <div class="methods" id="methods" role="radiogroup" aria-label="Downscaling method"></div>
+
+          <div class="field">
+            <div class="slider-row"><label for="gamma" class="lab">Fixed lapse rate</label><span class="val" id="gammaVal"></span>
+              <input type="range" id="gamma" min="3" max="10" step="0.1" value="6.5"></div>
+            <div class="presets" id="presetRow" role="group" aria-label="Fixed lapse presets">
+              <button type="button" class="btn ghost" data-g="6.5">Standard atmosphere</button>
+              <button type="button" class="btn ghost" data-g="9.8">Dry adiabatic</button>
+            </div>
+          </div>
+
+          <h3>Summit adjustments</h3>
+          <p class="small muted">Optional corrections for a windy, exposed summit. Both start at no change. The daily-swing control applies to the methods with a prescribed rate: Fixed lapse, Conditions, Adiabatic parcel and Monthly climatology. The methods that read the real daily cycle from data leave it alone.</p>
+          <div class="field">
+            <div class="slider-row"><label for="damp" class="lab">Diurnal swing removed</label><span class="val" id="dampVal"></span>
+              <input type="range" id="damp" min="0" max="0.6" step="0.01" value="0"></div>
+            <p class="small muted" id="dampNote"></p>
+          </div>
+          <div class="field">
+            <div class="slider-row"><label for="speed" class="lab">Wind speed-up over the model</label><span class="val" id="speedVal"></span>
+              <input type="range" id="speed" min="1" max="2" step="0.05" value="1"></div>
+          </div>
+          <div class="field">
+            <div class="slider-row"><label for="bias" class="lab">Bias correction</label><span class="val" id="biasVal"></span>
+              <input type="range" id="bias" min="-5" max="5" step="0.1" value="0"></div>
+            <p class="small muted">Add or subtract a constant once you have compared against a summit station. Applies to every summit.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Monthly climatology</h2>
+          <p class="small muted">For the Monthly climatology method: the cooling rate with height that is typical for each month, in <span id="climUnit"></span>. Rates are interpolated between mid-month values. The starting values are generic mid-latitude mountain figures (lower in winter, when inversions are common). They are not fitted to New Hampshire. Replace them with rates from a pair of local stations, such as a valley station and a summit station, before relying on this method.</p>
+          <div class="climgrid" id="climGrid"></div>
+          <div class="field">
+            <div class="slider-row"><label for="climDiurnal" class="lab">Daily swing in the rate</label><span class="val" id="climDiurnalVal"></span>
+              <input type="range" id="climDiurnal" min="0" max="3" step="0.1" value="1"></div>
+            <p class="small muted">The rate is steeper by this amount at 15:00 local time and weaker by the same amount at 03:00. Daytime rates run steeper than nighttime ones in most mountain records.</p>
+          </div>
+          <div class="row2"><button type="button" class="btn ghost" id="climReset">Reset to the starting values</button></div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h2>NWS network</h2>
+          <p class="small muted">Every summit&rsquo;s forecast comes from an NWS grid cell that carries its own elevation. The methods grouped under &ldquo;Uses all 48 summits&rsquo; NWS forecasts&rdquo; treat those cells as weather stations: the cell&rsquo;s elevation, its position, and its forecast temperature for each hour. Summits that share a cell count once. The station list is rebuilt whenever a new forecast is loaded.</p>
+          <p class="msg" id="netMsg" hidden></p>
+          <div class="field">
+            <div class="slider-row"><label for="radius" class="lab">BCDG first-pass radius of influence</label><span class="val" id="radiusVal"></span>
+              <input type="range" id="radius" min="10" max="200" step="5" value="60"></div>
+          </div>
+          <div class="field">
+            <div class="slider-row"><label for="decay" class="lab">BCDG radius shrink per pass</label><span class="val" id="decayVal"></span>
+              <input type="range" id="decay" min="0.5" max="0.9" step="0.05" value="0.7"></div>
+            <p class="small muted">Five passes, as in the gridded-MOS description. These two apply to both BCDG methods.</p>
+          </div>
+          <div class="field">
+            <div class="slider-row"><label for="bandwidth" class="lab">Local regression reach</label><span class="val" id="bandwidthVal"></span>
+              <input type="range" id="bandwidth" min="10" max="100" step="5" value="30"></div>
+            <p class="small muted">Distance at which a cell&rsquo;s weight in the local regression falls to 61%. It also counts less the more its elevation differs from the summit&rsquo;s.</p>
+          </div>
+          <details>
+            <summary>Cells used for this summit</summary>
+            <div class="tablewrap" tabindex="0" aria-label="NWS grid cells in the network" style="margin-top: 8px;"><table id="netTbl"></table></div>
+          </details>
+        </div>
+
+        <div class="card">
+          <div class="row2" style="justify-content: space-between; align-items: center;">
+            <h2>Custom forecast</h2>
+            <span class="tag" id="fcTag" hidden>Example</span>
+          </div>
+          <p class="small muted">Optional. Replaces the NWS forecast for the selected summit only, and is cleared when you pick another. The NWS grids carry no upper-air data, so for NWS forecasts the Levels and Hypsometric methods read the model&rsquo;s pressure levels automatically (see the Hypsometric card on the Forecast tab). Use this box to supply your own upper-air level or pressure instead.</p>
+          <div class="field">
+            <label for="fcText">Hourly forecast (CSV, temperatures in &deg;C)</label>
+            <textarea id="fcText" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          </div>
+          <div class="row2">
+            <label class="btn file">Load CSV file<input type="file" id="fcFile" accept=".csv,.txt,.tsv"></label>
+            <button type="button" class="btn ghost" id="fcExample">Use example</button>
+            <button type="button" class="btn ghost" id="fcClear">Clear</button>
+          </div>
+          <p class="msg" id="fcMsg" hidden></p>
+          <details>
+            <summary>Column names</summary>
+            <div class="notes" style="margin-top: 8px;">
+              <p><b>time</b> and <b>temp_c</b> are required (temp_f also works). Optional: <b>rh_pct</b>, <b>wind_kph</b> (or wind_mph, wind_ms), <b>cloud_pct</b>, <b>precip_mm</b>.</p>
+              <p>Levels method: <b>t_upper_c</b> and <b>z_upper_m</b>, the temperature and height of a model level above the summit such as 700 hPa.</p>
+              <p>Hypsometric method: <b>z_upper_m</b> plus <b>p_sfc_hpa</b> (model surface pressure, or <b>mslp_hpa</b>) and <b>p_upper_hpa</b> (700 if left out). Pressures in Pa are converted.</p>
+              <p>The example is invented and is not a forecast for any of these summits.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="card">
+          <div class="row2" style="justify-content: space-between; align-items: center;">
+            <h2>Your own stations</h2>
+            <span class="tag" id="stTag" hidden>Example</span>
+          </div>
+          <p class="small muted">For the BCDG &middot; your stations method. Paste temperatures from stations at different elevations, forecast or observed, one row per station per hour. Cleared when you pick another summit. The NWS network above needs no input.</p>
+          <div id="tgtRow" hidden>
+            <div class="row2">
+              <div class="field" style="flex: 1 1 120px;"><label for="tgtLat">Summit latitude</label><input type="number" id="tgtLat" inputmode="decimal" step="0.0001"></div>
+              <div class="field" style="flex: 1 1 120px;"><label for="tgtLon">Summit longitude</label><input type="number" id="tgtLon" inputmode="decimal" step="0.0001"></div>
+            </div>
+            <p class="small muted" style="margin-top: 6px;">Filled in from the summit&rsquo;s listed coordinates. Stations given by latitude and longitude are measured from here.</p>
+          </div>
+          <div class="field">
+            <label for="stText">Station temperatures (CSV, &deg;C)</label>
+            <textarea id="stText" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          </div>
+          <div class="row2">
+            <label class="btn file">Load CSV file<input type="file" id="stFile" accept=".csv,.txt,.tsv"></label>
+            <button type="button" class="btn ghost" id="stExample">Use example</button>
+          </div>
+          <p class="msg" id="stMsg" hidden></p>
+          <details>
+            <summary>Station columns</summary>
+            <div class="notes" style="margin-top: 8px;">
+              <p><b>station</b>, <b>elev_m</b>, <b>time</b> and <b>temp_c</b> (or temp_f), plus a position: either <b>lat</b> and <b>lon</b>, or <b>east_km</b> and <b>north_km</b> measured from the summit.</p>
+              <p>The stations need a spread of elevations. Their lapse rate comes from the temperature differences between them. The example stations are invented and sit around an imaginary summit.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How the numbers are made</h3>
+      <div class="notes">
+        <p><b>NWS forecast.</b> Each summit&rsquo;s forecast is the NWS gridded forecast (a blend of models that forecasters edit) for the 2.5 km grid cell that contains it, read from api.weather.gov. The cell&rsquo;s own elevation comes with it. Those values describe the smoothed terrain of the cell, which sits well below most of these summits, and this page corrects them upward. Temperature, humidity, wind and cloud are held constant or interpolated between the 1, 3 or 6 hour steps of the NWS series, and precipitation amounts are spread evenly over their period. Times are Eastern local time.</p>
+        <p><b>Elevation offset.</b> The summit elevation is the listed one, and sources differ by up to about 20 ft. The model elevation is the NWS cell value unless you type another.</p>
+        <p><b>Fixed lapse.</b> Summit temperature = model temperature &minus; rate &times; elevation difference.</p>
+        <p><b>Conditions.</b> Each hour picks a rate: 5.0 K/km when saturated or precipitating, 8.0 on clear calm-ish afternoons, 3.5 on clear still nights, 6.5 otherwise. Rates are smoothed over neighbouring hours. This is the default for NWS data.</p>
+        <p><b>Adiabatic parcel.</b> The textbook forced-lifting calculation. The air in the grid cell is lifted to the summit height. Unsaturated air cools at the dry adiabatic rate, g/c<sub>p</sub> = 9.75 K/km, until it reaches its lifting condensation level (from the cell&rsquo;s temperature and dew point, Bolton 1980). Above that it cools at the saturated adiabatic rate, which depends on temperature and pressure (about 4 K/km near 20 &deg;C, 6.5 near 0 &deg;C, 7 near &minus;10 &deg;C at 700 hPa) and is integrated in 25 m steps. A summit below the cell warms at the dry rate. Real mountain air is usually more stable than a lifted parcel, so this is the steepest cooling a summit will show, a bound rather than a best estimate. It needs humidity, which the NWS grids have.</p>
+        <p><b>Monthly climatology.</b> The traditional approach used by climate mapping: a typical cooling rate for the month, interpolated between mid-month values, with a daily harmonic that is steeper at 15:00 and weaker at 03:00. It ignores the weather. The twelve starting rates are generic mid-latitude mountain figures and are not fitted to New Hampshire, so replace them with rates from a local station pair. It is useful as a baseline to compare the weather-driven methods against.</p>
+        <p><b>Levels.</b> Interpolates linearly in height between the NWS cell temperature and the temperature at the model pressure level nearest the summit (950, 925, 900, 850, 800 or 700 hPa, from Open-Meteo). Above that level it uses 6.5 K/km. It follows the model&rsquo;s own inversions. With a custom forecast it uses your t_upper_c and z_upper_m instead.</p>
+        <p><b>Hypsometric.</b> The hypsometric equation, z<sub>2</sub> &minus; z<sub>1</sub> = (R<sub>d</sub> T&#772;<sub>v</sub> / g) ln(p<sub>1</sub> / p<sub>2</sub>), ties the thickness of a layer to its mean virtual temperature. From the NWS forecast the method works with the model&rsquo;s isobaric levels (950, 925, 900, 850, 800 and 700 hPa, each with a height, temperature and humidity). Levels are exact pressures, so no surface pressure is needed. The two levels that bracket the summit&rsquo;s height give its free-air state: the equation, run upward from the lower level through the layer&rsquo;s virtual temperatures, gives the pressure at the summit&rsquo;s height, and temperature and humidity are interpolated in ln&nbsp;p between the levels. The NWS forecast then pulls that value toward itself: the difference between the NWS cell temperature and the model&rsquo;s free-air temperature at the cell&rsquo;s height (held to 6 K) is added at the summit, fading by 1/e over 700 m of height difference, so a cell near the summit counts almost fully and a valley cell hardly at all. Each layer is checked: its mean virtual temperature from the heights must agree with the mean of its two level temperatures to 2.5 K, or the hour is skipped. The 700 m reach and the limits are assumptions, not fitted. Observed pressure is not fed into the thickness on purpose. A thickness is a small difference between large numbers: 1 hPa of error in a surface pressure changes the layer&rsquo;s implied lapse rate by about 3 K/km for a cell near Mount Washington&rsquo;s height (2 K/km at 1,400 m, 0.6 at 300 m). With a custom forecast that has z_upper_m (and p_sfc_hpa or mslp_hpa) the method still works the older way: the virtual lapse rate that reproduces the thickness from the model surface pressure to the upper level, carried to the summit.</p>
+        <p><b>Summit pressure.</b> Every method reports the summit pressure from the same equation. It starts from the model surface pressure, or reduces mean sea level pressure (the model&rsquo;s, adjusted to the airport observations, for NWS forecasts), or falls back to the standard atmosphere at the model cell height, and says which in the table.</p>
+        <p><b>BCDG on the NWS forecasts.</b> The NWS Meteorological Development Laboratory&rsquo;s Gridded MOS analyses station forecasts with BCDG (Glahn et al. 2009), an extension of the Bergthorsson&ndash;D&ouml;&ouml;s successive-correction method as implemented by Cressman, adjusted for elevation with a lapse rate computed from the station data. Here the stations are the NWS grid cells behind the 48 summits. Each summit&rsquo;s call to api.weather.gov returns a forecast for one cell, together with that cell&rsquo;s elevation; summits that share a cell share one station. For every hour the lapse rate is the sum of temperature differences (higher cell minus lower cell) over the sum of the elevation differences, across all cell pairs. Each cell is moved to the summit height with that rate, the mean of the results is the first guess, and five passes correct it with a shrinking radius of influence, weighting each cell by its distance from the summit. The published descriptions give no operational radii, weights or limits, so the 60 km starting radius, the &times;0.7 shrink, the Cressman weight (R<sup>2</sup> &minus; r<sup>2</sup>) / (R<sup>2</sup> + r<sup>2</sup>) and a &minus;5 to 11 K/km clamp on the lapse rate are assumptions you can change. What this can and cannot do: every cell comes from the same NWS forecast, so the network reproduces the lapse rate and the geography that forecast already contains, and it cannot see anything the forecast misses. The cells are smoothed terrain, all below the summits, so the summit is reached by extrapolation from the highest cells. It is a single-point version of the analysis, not the operational one.</p>
+        <p><b>BCDG on your stations.</b> The same calculation on station temperatures you paste on the Setup tab, forecast or observed. Observed station data at real summit and valley sites is the better input, since it holds the inversions and cold pools that the smoothed grid cells cannot.</p>
+        <p><b>Elevation regression.</b> The regional method behind most simple downscaling: for each hour, fit one straight line to temperature against elevation over all the grid cells and read it at the summit height. The line&rsquo;s slope, limited to &minus;5 to 11 K/km, is that hour&rsquo;s lapse rate. Cells in different places are treated alike, so a warm-to-cold gradient across the region shows up as noise in the slope.</p>
+        <p><b>Local regression.</b> The same line fitted with weights, in the spirit of PRISM (Daly et al.). A cell&rsquo;s weight falls off with its distance from the summit (a Gaussian with the reach set on this tab) and with the difference between its elevation and the summit&rsquo;s (halved at 500 m). Where the nearby cells span less than 30 m of elevation there is no local slope, so the method keeps the local temperature level and borrows the regional slope. The weight functions are simple stand-ins for PRISM&rsquo;s, not its actual weighting.</p>
+        <p><b>GIDS.</b> Gradient plus Inverse Distance Squared (Nalder and Wein 1998). Temperature is regressed on east, north and elevation over all cells. Every cell is then moved to the summit&rsquo;s position and elevation with those three gradients (horizontal gradients limited to 0.1 K/km), and the results are averaged with 1/distance<sup>2</sup> weights. Distances are floored at half a grid cell so the summit&rsquo;s own cell does not get infinite weight. It needs five or more cells.</p>
+        <p><b>Median of methods.</b> At each hour, the middle value of the summit temperatures the other available methods give. A common way to blunt the outliers of any single method; the adiabatic bound and a method thrown off by unusual data are the usual ones.</p>
+        <p><b>Most likely, and the bands.</b> At each hour every method that ran on its own inputs gives a summit temperature. The bands are weighted percentiles of those values (25th to 75th and 10th to 90th), taken by the NIST/SEMATECH Handbook definition (rank p(N&nbsp;+&nbsp;1) with linear interpolation, so equal weights give the plain NIST percentile). The hover list shows each method&rsquo;s own percentile among them, which is its plotting position i/(N&nbsp;+&nbsp;1) with tied methods sharing the mean, and the heavy line is their weighted median, the &ldquo;Most likely&rdquo; method. With Equal weights every method counts the same and these are plain percentiles. With Regime-weighted, each method&rsquo;s weight is a bell curve in the difference between the cooling rate it implies and the rate expected for that hour, plus a small floor so no method is ever dropped. The expected rate combines two things by inverse-variance weighting: the rate typical of the regional weather regime (below), and the rate the 48 NWS cells imply that hour, a least-squares slope of temperature on cell elevation with its standard error. Methods in the same family (the four that use the network, the three prescribed-rate methods) share a family weight, so the correlated ones are not counted several times. This measures how far the methods disagree, weighted by plausibility. It is not a calibrated probability and has not been verified against summit observations.</p>
+        <p><b>Regional weather and pressure.</b> The regional weather is the hourly average of cloud, humidity, wind and precipitation over the NWS cells, plus the regional temperature trend over 12 hours taken on 24-hour running means so the daily cycle drops out. The regimes are, in order of precedence: wet or frontal (a quarter of the cells with at least 0.1 mm an hour, or humid and overcast), cold advection (regional cooling with wind from 250 to 20 degrees), warm advection (regional warming with wind from 60 to 250 degrees), windy (35 km/h or more), clear and calm (under 35% cloud and under 18 km/h, split into day, night and other), and mixed. Wet and warm advection carry a low-pressure signature; cold advection and clear calm carry a high-pressure one. The NWS gridded forecast has no pressure field, so these are inferences from the weather that usually accompanies low and high pressure, not pressure readings. Real pressure replaces the inference when it is available: the model&rsquo;s sea-level pressure (Open-Meteo) adjusted to the latest observation at Mt Washington Regional (KHIE) and Eastern Slopes Regional (KIZG), or the mslp_hpa or p_sfc_hpa of a custom forecast. Its 6-hour change sets the signature (falling 1.5 hPa or more is low, rising 1.5 or more is high), and for the hours within 3 of an observation the measured 3-hour tendency is used. The offset between the observation and the model fades with a 12-hour time constant. The thresholds and expected rates are assumptions.</p>
+        <p><b>MWARVTP (the live Auto Road look).</b> The Mount Washington Auto Road has temperature sensors at six heights, and the same feed carries the Observatory tower on the summit (6,309 ft). Each station&rsquo;s reading is the median of its last 8 minutes. A robust weighted line through the stations (weighted by the sensor&rsquo;s own scatter and by nearness in height to the layer between this summit&rsquo;s NWS cell and the summit) gives a cooling rate for that layer right now, which can be negative in an inversion. The live temperature at the summit is the NWS cell temperature moved up by that rate. Its difference from the forecast&rsquo;s own most-likely value is carried forward with a weight that falls smoothly from 1 at the reading to 0 at the horizon (6 hours unless you change it) and is multiplied by a confidence from 0 to 1 that drops when the stations scatter around the line, when dropping one station changes the answer, when the readings are old, or when the summit is far from the road. Beyond the horizon the forecast is untouched. For Mount Washington the tower reading itself is the start of the line, and the road stations are used to check the method against it. The constants are assumptions, not fitted to observations, and sensors in open sun can read warm.</p>
+        <p><b>Summit adjustments.</b> For the methods with a prescribed rate (Fixed lapse, Conditions, Adiabatic parcel and Monthly climatology), &ldquo;Diurnal swing removed&rdquo; shrinks the daily temperature swing about the 24 h mean. It is switched off for Levels, Hypsometric, the BCDG methods, the regressions, GIDS and the median, which already carry the real daily cycle. &ldquo;Wind speed-up&rdquo; scales the model 10 m wind for every method. Both controls start at no change and are starting heuristics, not fitted values. Compare a week of output with a summit station and use the bias control. For Mount Washington, the Mount Washington Observatory publishes its own summit forecast and observations, which make a good check.</p>
+        <p><b>Feels-like.</b> Wind chill (NWS/Environment Canada formula) below 10&nbsp;&deg;C when wind exceeds 4.8 km/h. Precipitation amounts are not rescaled with height.</p>
+        <p><b>Summit list.</b> Elevations follow Wikipedia&rsquo;s list of the four-thousand footers and coordinates follow nh48.info; elevations are good to tens of feet and coordinates to a few hundred metres.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<aside class="calls" id="calls" hidden role="region" aria-label="NWS API calls">
+  <div class="calls-h">
+    <h2>NWS API calls</h2>
+    <button type="button" class="calls-x" id="callsX" aria-label="Close the API call log">&times;</button>
+  </div>
+  <div class="calls-bar" role="progressbar" id="callsBar" aria-label="Progress of this phase" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="callsFill"></i></div>
+  <div class="calls-s"><span id="callsStatus" role="status"></span><span class="mono" id="callsCount" aria-hidden="true"></span></div>
+  <ol id="callsList" role="log" aria-live="off" aria-label="Calls to api.weather.gov, newest last" tabindex="0"></ol>
+</aside>
+
+<script src="capacitor.js"></script>
+<script src="feeds-config.js"></script>
+<script src="vendor/highcharts.js"></script>
+<script src="vendor/highcharts-more.js"></script>
+<script src="peaks.js"></script>
+<script src="core.js"></script>
+<script src="feeds.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
